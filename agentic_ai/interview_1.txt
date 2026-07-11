@@ -1,0 +1,36 @@
+Question: what is agentic AI?
+Answer: 
+Agentic AI is a type of artificial intelligence that can independently plan, 
+make decisions, and take actions to achieve a goal, rather than just responding 
+to a single prompt.
+
+Traditional AI (like a chatbot): You ask, "Summarize this report," and it gives you a summary.
+Agentic AI: You ask, "Prepare a presentation on this report," and it can:
+Read the report.
+Identify the key points.
+Search for supporting information if needed.
+Create slides.
+Revise them based on your feedback.
+Deliver the final presentation.
+
+The AI acts more like a digital assistant than a simple question-answering tool.
+
+Key characteristics of Agentic AI
+Goal-oriented: Works toward completing an objective.
+Planning: Breaks complex tasks into smaller steps.
+Decision-making: Chooses the best action based on available information.
+Tool usage: Can use external tools such as web browsers, databases, calculators, APIs, or software applications.
+Memory: Remembers relevant information during a task and, in some systems, across tasks.
+Adaptation: Changes its approach if something doesn't work.
+
+Generative AI is like a smart writer: it creates text, images, or code when asked.
+Agentic AI is like a project manager: it decides what needs to be done, organizes the work, 
+uses tools, and keeps working until the goal is achieved.
+
+In short, agentic AI extends generative AI by adding planning, reasoning, memory, and the 
+ability to take actions, making it capable of completing multi-step tasks with minimal 
+human guidance.
+
+#########################################
+
+Question: 
