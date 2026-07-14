@@ -66,3 +66,5 @@ You never see the plumbing — it just looks like Claude magically "knows" your 
 **MCP is a standard "plug" that lets AI assistants securely connect to and use outside apps and data — so instead of just chatting, the AI can actually check your calendar, search your files, or take actions on your behalf.**
 
 If you're using Claude specifically, this is the same idea behind "connectors" you might see in the app — those are MCP servers you can turn on so Claude can work with tools like Google Drive, Gmail, or other services. Want me to go a level deeper into how it works technically (e.g., the actual message format), or is this the right altitude?
+
+MCP is just a communication protocol

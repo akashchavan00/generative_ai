@@ -1,0 +1,57 @@
+## End-to-End Example: "Check my calendar and create a task for my next meeting"
+
+Let's say you're chatting with Claude Desktop, and you have a **Google Calendar MCP server** connected. You type:
+
+> "What's my next meeting, and add a prep task for it in Asana?"
+
+Here's exactly what happens, step by step:
+
+### Step 1: Connection setup (happens beforehand)
+When Claude Desktop starts up, the **MCP Client** inside it opens connections to whichever MCP servers you've configured — here, a Google Calendar server and an Asana server. Each server tells the client what it can do: its available **tools** (e.g., `get_events`, `create_task`), **resources**, and **prompts**. This is like the servers handing over a menu of capabilities.
+
+### Step 2: You send your message
+Claude (the model) receives your question in plain English along with the list of tools it now knows are available (`get_events` from Calendar, `create_task` from Asana).
+
+### Step 3: Claude decides it needs a tool
+Claude reasons: *"I don't know what's on this person's calendar — I need to look it up."* Instead of guessing or hallucinating an answer, it generates a structured **tool call**, roughly:
+```json
+{ "tool": "get_events", "params": { "range": "next_7_days" } }
+```
+
+### Step 4: The MCP Client routes the request
+The MCP Client inside Claude Desktop takes that tool call and sends it — via the MCP protocol (JSON-RPC messages) — to the **Google Calendar MCP server**.
+
+### Step 5: The server does the real work
+The Calendar server takes that request, calls the **actual Google Calendar API** with your credentials, and gets back your real events.
+
+### Step 6: Result flows back
+The server sends the event data back to the MCP Client, which hands it back to Claude as a tool result:
+```json
+{ "next_meeting": "Product Sync, 3:00 PM, with Priya and Sam" }
+```
+
+### Step 7: Claude reasons again
+Now Claude has real, current data. It sees the meeting is "Product Sync with Priya and Sam" and decides it needs a second tool call — this time to Asana:
+```json
+{ "tool": "create_task", "params": { "title": "Prep notes for Product Sync", "due": "3:00 PM today" } }
+```
+
+### Step 8: Second round-trip
+Same pattern: MCP Client → Asana MCP server → real Asana API → task actually gets created → confirmation flows back to Claude.
+
+### Step 9: Claude replies to you
+Now Claude has everything it needs and responds in natural language:
+
+> "Your next meeting is **Product Sync** at 3:00 PM with Priya and Sam. I've added a task in Asana: 'Prep notes for Product Sync,' due before the meeting."
+
+---
+
+## Why this matters
+
+Without MCP, Claude would either:
+- **Hallucinate** an answer (bad), or
+- Anthropic/Claude Desktop would need **custom-built, one-off code** specifically wiring Claude to Google Calendar's API and Asana's API separately, for every single AI app that wants this feature.
+
+With MCP, the Calendar and Asana servers are built **once** — by Google/Asana or the community — and *any* MCP-compatible AI app (Claude, or another one entirely) can plug into them immediately, using the same standard "language" of tool calls and results.
+
+The core loop, always: **Claude decides it needs external info/action → Client sends structured request to Server → Server talks to the real system → result flows back → Claude uses it to respond or takes the next step.**
