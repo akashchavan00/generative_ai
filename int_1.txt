@@ -1,0 +1,235 @@
+Cache-Augmented RAG (Retrieval-Augmented Generation)** is an optimization technique that 
+adds a cache layer to a standard RAG pipeline. The goal is to avoid performing 
+expensive retrieval and LLM generation for repeated or very similar queries**, making 
+the system faster, cheaper, and more scalable.
+
+Think of it like this:
+
+* **Traditional RAG** = Every time you ask a question, the system searches the knowledge 
+base and calls the LLM.
+* **Cache-Augmented RAG** = Before searching the knowledge base, the system first checks 
+if it has already answered the same or a very similar question.
+
+
+# Cache-Augmented RAG
+
+Now add a cache.
+
+```
+                 User Query
+                      │
+                      ▼
+               Cache Lookup
+                 /        \
+            Hit             Miss
+            │                │
+            ▼                ▼
+      Return Answer     Traditional RAG
+                              │
+                              ▼
+                        Retrieve Docs
+                              │
+                              ▼
+                             LLM
+                              │
+                              ▼
+                       Save in Cache
+                              │
+                              ▼
+                         Return Answer
+```
+
+If the answer already exists in cache,
+
+there is **no retrieval**
+
+and
+
+**no LLM call**.
+
+---
+
+
+##########################################
+
+Similarity and Semantic Search
+
+##########################################
+
+Good interview question — let me break down both clearly, including how they relate to each 
+other, since interviewers often want you to distinguish them precisely.
+
+## Similarity Search
+
+**What it is:** A general technique for finding items in a dataset that are "close" to a 
+query item, based on some distance/similarity metric — not necessarily involving meaning 
+at all.
+
+**How it works:**
+1. Represent each item (text, image, audio) as a vector (embedding) in high-dimensional space.
+2. Represent the query the same way.
+3. Compute distance/similarity between the query vector and all stored vectors using a metric 
+like:
+   - **Cosine similarity**
+   - **Euclidean distance (L2)**
+   - **Dot product**
+4. Return the top-k nearest vectors (Approximate Nearest Neighbor search — ANN — using indexes 
+like HNSW, FAISS, IVF for speed at scale).
+
+**Key point:** Similarity search is a *mechanism* — it doesn't care what the vectors represent. 
+It could be used for images, audio fingerprints, product recommendations, etc.
+
+## Semantic Search
+
+**What it is:** A *specific application* of similarity search where the goal is to retrieve 
+results based on **meaning/intent** rather than exact keyword match.
+
+**How it works:**
+1. Use an embedding model (e.g., sentence-transformers, OpenAI/Voyage/Cohere embeddings) to 
+convert text into dense vectors that capture semantic meaning.
+2. Use similarity search (cosine similarity, etc.) to find the closest vectors to the query.
+3. Return results that are conceptually related, even if they don't share exact words.
+
+**Example:** Searching "how to reduce fever in kids" could match a document titled "managing 
+high temperature in children" — no overlapping keywords, but same meaning.
+
+## The Clean Way to Frame the Distinction
+
+> "**Similarity search** is the underlying algorithm/technique — computing distance between 
+vectors to find nearest neighbors. **Semantic search** is a use case built on top of similarity 
+search, applied specifically to text (or multimodal data) using embeddings that capture semantic 
+meaning, so retrieval is based on *meaning* rather than exact keyword overlap like traditional 
+search (e.g., BM25/TF-IDF)."
+
+## Good Bonus Points to Mention in an Interview
+
+- **Contrast with keyword/lexical search:** Traditional search (Elasticsearch, BM25) matches 
+exact terms; semantic search matches *meaning*, solving synonym/paraphrase problems.
+- **Hybrid search:** In practice, production systems often combine both — BM25 + semantic 
+similarity — for the best of precision and recall.
+- **This is the retrieval step in RAG:** Semantic search (via similarity search) is exactly 
+what powers the "R" in RAG — it's how you find relevant chunks to feed the LLM.
+- **Trade-offs:** Semantic search can miss exact-match cases (e.g., product codes, IDs) 
+where keyword search is actually better — hence hybrid approaches.
+
+
+
+#################################
+
+Disadvantages of RAG:
+1. Retrieval Quality issues.
+2. Hallucination
+3. Latency
+
+
+##################################
+
+RAG Evaluation:
+
+1. Retrieval Evaluation
+Metrics (classic IR metrics):
+
+Precision@k — Of the top-k retrieved chunks, how many are actually relevant?
+Recall@k — Of all relevant chunks in the corpus, how many did we retrieve?
+MRR (Mean Reciprocal Rank) — How high up is the first relevant result?
+NDCG (Normalized Discounted Cumulative Gain) — Rewards relevant results appearing 
+higher in ranking.
+
+How to get ground truth: Build a labeled eval set — (query, relevant chunk IDs) pairs — 
+either hand-labeled or synthetically generated (e.g., using an LLM to generate questions 
+from known chunks, so you know the "correct" chunk in advance).
+2. Generation Evaluation (given good context)
+
+Faithfulness / Groundedness — Does the answer only use info present in the retrieved 
+context, or did it hallucinate beyond it?
+Answer relevance — Does the answer actually address the question asked?
+Context precision/recall — Was the retrieved context actually used, or was much of it 
+irrelevant noise?
+
+3. End-to-End Evaluation Frameworks
+Mention specific tools — this shows real-world experience:
+
+RAGAS — Popular framework computing faithfulness, answer relevancy, context precision/recall 
+automatically using an LLM-as-judge.
+TruLens — Similar, with "RAG triad" (context relevance, groundedness, answer relevance).
+LLM-as-a-judge — Use a strong LLM (e.g., GPT-4/Claude) to score answers against a rubric 
+or reference answer, since human eval doesn't scale.
+
+4. Human Evaluation (still essential)
+
+Automated metrics are proxies — a human eval loop (even small-scale, spot-checked) catches 
+issues LLM judges miss, like subtle factual errors or tone problems.
+Common in production: sample X% of live traffic weekly for human review, track thumbs up/down 
+feedback.
+
+5. Online / Production Metrics
+Beyond offline eval, mention real-world signals:
+
+User engagement (click-through, follow-up questions, session abandonment)
+Latency and cost per query
+Citation accuracy — did users click through and confirm the source actually supports the claim?
+
+
+############################################
+
+
+## Why Re-ranking Exists: The Core Problem
+
+Initial retrieval (vector/embedding similarity search) is optimized for **speed at scale**, 
+not precision. To search millions of documents fast, embedding-based retrieval uses 
+approximate nearest neighbor (ANN) search with bi-encoders — where the query and documents 
+are embedded *independently*, then compared via cosine similarity/dot product.
+
+This is fast, but it's a weaker relevance signal because the query and document never 
+actually "see" each other during encoding — the model can't reason about how they relate, 
+it just compares two separate vectors.
+
+**Re-ranking fixes this** by taking a smaller candidate set (e.g., top 50–100 from initial 
+retrieval) and scoring them with a much more accurate — but slower — model that *does* look 
+at the query and document together.
+
+## Two-Stage Retrieval Architecture
+
+**Stage 1: Retrieval (recall-focused)**
+- Fast bi-encoder / ANN search (FAISS, HNSW) or hybrid (BM25 + dense).
+- Goal: cast a wide net — get top-k (e.g., 50-100) candidates that likely contain the right 
+answer, prioritizing *recall* over precision.
+
+**Stage 2: Re-ranking (precision-focused)**
+- Use a **cross-encoder** — a model that takes the (query, document) pair *together* as input 
+and outputs a relevance score directly.
+- Cross-encoders are far more accurate because they can model fine-grained interactions between 
+query and document tokens (attention across both), not just compare fixed vectors.
+- Much slower/more expensive than bi-encoders, which is exactly why you don't run it over 
+the whole corpus — only over the pre-filtered candidate set.
+- Return the re-ranked top-k (e.g., top 5) to feed into the LLM's context window.
+
+## Popular Re-ranking Approaches/Tools (mention for depth)
+
+- **Cross-encoder models** — e.g., `ms-marco-MiniLM`, Cohere Rerank, Voyage rerank, 
+BGE-reranker.
+- **LLM-based re-ranking** — prompt an LLM to score or reorder candidates directly 
+(more expensive, sometimes more accurate for nuanced relevance).
+- **Reciprocal Rank Fusion (RRF)** — a lightweight technique to merge rankings from 
+multiple retrievers (e.g., BM25 + dense) without needing a full cross-encoder.
+
+## When It's Worth Adding
+
+- High-stakes accuracy needs (legal, medical, finance) where top-1 precision really matters.
+- Hybrid retrieval setups (BM25 + dense) — re-ranking is a natural way to merge and reconcile 
+two different scoring systems.
+- Cases with lots of near-duplicate or ambiguous content, where embedding similarity alone 
+can't cleanly separate "close enough" from "actually relevant."
+
+**Trade-off to acknowledge:** re-ranking adds latency (an extra model call) and cost, so 
+it's not always worth it for low-stakes, latency-sensitive applications — you're trading 
+speed for precision.
+
+## Strong Closing Line for the Interview
+
+> "I'd add re-ranking as a second stage after initial retrieval — retrieval optimizes for 
+recall using fast bi-encoder similarity search, but a cross-encoder re-ranker looks at the 
+query and document jointly, which gives much better precision on the final top-k that actually 
+gets passed to the LLM. It's a classic recall-then-precision funnel, and worth the added 
+latency when answer quality matters more than raw speed."
+
