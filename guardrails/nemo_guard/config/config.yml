@@ -1,0 +1,13 @@
+models:
+  - type: main
+    engine: groq
+    model: llama-3.3-70b-versatile
+
+rails:
+  input:
+    flows:
+      - self check input
+
+# Non-streaming: guardrails need to inspect the full input before
+# deciding whether to allow it through to the main model.
+streaming: False
