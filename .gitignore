@@ -1,4 +1,4 @@
 mcp/.env
-guardrails/nemo_guard\.env
-guardrails\.env
+guardrails/nemo_guard/.env
+guardrails/.env
 guardrails/nemo_guard/venv311/
