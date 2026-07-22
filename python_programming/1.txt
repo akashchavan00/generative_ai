@@ -1,0 +1,116 @@
+##############################################
+
+Mutable vs Immutable Objects in Python
+
+Immutable objects cannot be changed after they're created. Any operation that seems to "modify" 
+them actually creates a new object.
+
+Examples: int, float, str, tuple, bool, frozenset
+
+python
+x = "hello"
+y = x
+x = x + " world"  # creates a NEW string object
+print(x)  # "hello world"
+print(y)  # "hello" (unchanged)
+
+Here, x + " world" doesn't modify the original string — it builds a new one and rebinds x to it.
+
+Mutable objects can be changed in place after creation — their content can be altered without 
+creating a new object.
+
+Examples: list, dict, set, and custom classes (by default)
+
+#######################################################
+
+#######################################################
+
+**Shallow Copy vs Deep Copy**
+
+Both are ways to create a copy of an object, but they differ in how they handle nested/referenced 
+objects inside it.
+
+**Shallow Copy**
+
+Creates a new outer object, but the nested objects inside it are still shared (referenced), 
+not copied. So the top level is independent, but inner mutable elements are not.
+
+```python
+import copy
+
+original = [[1, 2], [3, 4]]
+shallow = copy.copy(original)  # or original.copy(), or original[:]
+
+shallow.append([5, 6])   # only affects shallow, since this changes the outer list
+print(original)  # [[1, 2], [3, 4]]
+print(shallow)   # [[1, 2], [3, 4], [5, 6]]
+
+shallow[0].append(99)    # modifies a nested list — shared with original!
+print(original)  # [[1, 2, 99], [3, 4]]  <-- changed!
+print(shallow)   # [[1, 2, 99], [3, 4], [5, 6]]
+```
+
+Here, `shallow[0]` and `original[0]` point to the *same* inner list, so mutating it affects both.
+
+**Deep Copy**
+
+Recursively copies everything — the outer object AND all nested objects — so the copy is fully 
+independent of the original.
+
+```python
+import copy
+
+original = [[1, 2], [3, 4]]
+deep = copy.deepcopy(original)
+
+deep[0].append(99)
+print(original)  # [[1, 2], [3, 4]]      <-- unchanged
+print(deep)       # [[1, 2, 99], [3, 4]]
+```
+
+Now, no matter how deeply nested the modification is, `original` stays untouched.
+
+**Visual summary**
+
+| Aspect | Shallow Copy | Deep Copy |
+|---|---|---|
+| Outer object | New object | New object |
+| Nested objects | Shared references | Recursively copied (independent) |
+| Speed | Faster | Slower (more work) |
+| Function | `copy.copy(obj)` | `copy.deepcopy(obj)` |
+| Common shortcuts | `list(x)`, `x[:]`, `x.copy()`, `dict(x)` | No shortcut — must use `copy.deepcopy()` |
+
+**Quick rule of thumb**
+- If your object contains only immutable elements (like `[1, 2, 3]` or `(4, 5)`), shallow copy 
+behaves just like deep copy — there's nothing nested to worry about.
+- If your object contains mutable elements (lists within lists, dicts within dicts, custom objects), 
+and you want full independence, use `deepcopy`.
+
+**Note on custom objects**: Both `copy.copy()` and `copy.deepcopy()` work on custom classes too, 
+and you can customize their behavior by defining `__copy__()` and `__deepcopy__()` methods on your 
+class.
+
+
+#####################################################
+
+
+#####################################################
+
+List Comprehension
+
+A concise, one-line way to create a list by applying an expression to each item in an iterable, 
+optionally filtering with a condition — instead of writing a full for loop with .append().
+
+# Traditional way
+squares = []
+for x in range(10):
+    squares.append(x ** 2)
+
+# List comprehension
+squares = [x ** 2 for x in range(10)]
+
+#####################################################
+
+#####################################################
+
+
