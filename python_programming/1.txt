@@ -1,3 +1,40 @@
++++++++++++++++++++++++++++++++++++
+
+************QUESTIONS**************
+
+1. What is the difference between `==` and `is`?
+2. Explain mutable vs immutable objects.
+3. What are shallow copy and deep copy?
+4. What is list comprehension?
+5. What is the difference between a list and a tuple?
+6. What are `*args` and `**kwargs`?
+7. Explain Python decorators.
+8. What are generators?
+9. What is the difference between a generator and a list?
+10. What is a lambda function?
+11. Explain `map()`, `filter()`, and `reduce()`.
+12. What is the difference between `append()` and `extend()`?
+13. Explain Python namespaces (LEGB rule).
+14. What are Python modules and packages?
+15. What is the purpose of `if __name__ == "__main__"`?
+16. What is the difference between instance methods, `@classmethod`, and `@staticmethod`?
+17. Explain inheritance in Python.
+18. What is method overriding?
+19. What is polymorphism in Python?
+20. What are Python exceptions, and how do you handle them?
+21. What is the difference between `raise` and `assert`?
+22. What is a context manager (`with` statement)?
+23. What is the Global Interpreter Lock (GIL)?
+24. What is the difference between threading and multiprocessing?
+25. What is the difference between assignment, shallow copy, and deep copy?
+26. How does Python's garbage collection work?
+27. What are iterators?
+28. What is the difference between an iterable and an iterator?
+29. What are closures in Python?
+30. What is monkey patching?
+
+
+
 ##############################################
 
 Mutable vs Immutable Objects in Python
@@ -112,5 +149,494 @@ squares = [x ** 2 for x in range(10)]
 #####################################################
 
 #####################################################
+
+
+**List vs Tuple**
+
+| Aspect | List | Tuple |
+|---|---|---|
+| Mutability | Mutable — can change, add, remove elements | Immutable — cannot change after creation |
+| Syntax | Square brackets `[1, 2, 3]` | Parentheses `(1, 2, 3)` |
+| Performance | Slightly slower | Faster (due to immutability, less overhead) |
+| Memory | Uses more memory | Uses less memory |
+| Hashable | No — can't be used as dict key or set element | Yes (if all elements are hashable) — can be used as dict key |
+| Methods available | Many (`append`, `remove`, `sort`, `extend`, etc.) | Few (`count`, `index`) |
+| Use case | When data may change | When data should stay constant / represent a fixed record |
+
+**Examples**
+
+```python
+# List — mutable
+my_list = [1, 2, 3]
+my_list.append(4)
+my_list[0] = 100
+print(my_list)  # [100, 2, 3, 4]
+
+# Tuple — immutable
+my_tuple = (1, 2, 3)
+my_tuple[0] = 100  # TypeError: 'tuple' object does not support item assignment
+```
+
+**Tuple as dict key (lists can't do this)**
+
+```python
+locations = {
+    (28.6, 77.2): "Delhi",
+    (19.0, 72.8): "Mumbai"
+}
+# locations = {[28.6, 77.2]: "Delhi"}  # TypeError: unhashable type: 'list'
+```
+
+**Why tuples are faster / lighter**
+
+Since tuples can't change, Python can make certain internal optimizations (like caching or avoiding overallocation for future growth, which lists need). This makes tuples slightly more memory-efficient and quicker to create.
+
+```python
+import sys
+
+l = [1, 2, 3]
+t = (1, 2, 3)
+
+print(sys.getsizeof(l))  # e.g. 88 bytes
+print(sys.getsizeof(t))  # e.g. 64 bytes (smaller)
+```
+
+**Single-element tuple gotcha**
+
+A common mistake — you need a trailing comma to make a single-element tuple:
+
+```python
+not_a_tuple = (5)      # this is just an int, 5
+a_tuple = (5,)          # this IS a tuple
+print(type(not_a_tuple))  # <class 'int'>
+print(type(a_tuple))      # <class 'tuple'>
+```
+
+**When to use which**
+
+- **Use a list** when you have a collection of items that might grow, shrink, or be reordered — e.g., a list of user inputs, a queue of tasks.
+- **Use a tuple** when you have a fixed collection that represents something whole, like coordinates `(x, y)`, RGB values `(255, 0, 0)`, or when returning multiple values from a function — and especially when you want to guarantee the data won't be accidentally modified.
+
+```python
+def get_min_max(numbers):
+    return min(numbers), max(numbers)  # returns a tuple
+
+low, high = get_min_max([4, 1, 9, 2])
+print(low, high)  # 1 9
+```
+
+
+######################################################
+
+######################################################
+
+**`*args` and `**kwargs`**
+
+These let a function accept a variable number of arguments — `*args` for extra positional arguments, `**kwargs` for extra keyword arguments. The names `args` and `kwargs` are just convention; the important part is the `*` and `**`.
+
+**`*args` — variable positional arguments**
+
+Collects extra positional arguments into a **tuple**.
+
+```python
+def add(*args):
+    print(args)        # tuple of all arguments passed
+    return sum(args)
+
+print(add(1, 2, 3))       # (1, 2, 3) -> 6
+print(add(5, 10))         # (5, 10) -> 15
+print(add())               # () -> 0
+```
+
+You can mix regular parameters with `*args`:
+
+```python
+def greet(greeting, *names):
+    for name in names:
+        print(f"{greeting}, {name}!")
+
+greet("Hello", "Alice", "Bob", "Charlie")
+# Hello, Alice!
+# Hello, Bob!
+# Hello, Charlie!
+```
+
+**`**kwargs` — variable keyword arguments**
+
+Collects extra keyword arguments into a **dictionary**.
+
+```python
+def print_info(**kwargs):
+    print(kwargs)   # dict of all keyword arguments
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+print_info(name="Alice", age=30, city="Mumbai")
+# {'name': 'Alice', 'age': 30, 'city': 'Mumbai'}
+# name: Alice
+# age: 30
+# city: Mumbai
+```
+
+**Using both together**
+
+```python
+def demo(a, b, *args, **kwargs):
+    print("a:", a)
+    print("b:", b)
+    print("args:", args)
+    print("kwargs:", kwargs)
+
+demo(1, 2, 3, 4, x=10, y=20)
+# a: 1
+# b: 2
+# args: (3, 4)
+# kwargs: {'x': 10, 'y': 20}
+```
+
+**Order matters in function definition:**
+
+```python
+def func(pos1, pos2, *args, kw1, kw2, **kwargs):
+    ...
+# order: normal positional -> *args -> keyword-only -> **kwargs
+```
+
+**Unpacking (calling functions) — the reverse use case**
+
+The same `*` and `**` syntax can also be used to *unpack* existing lists/tuples/dicts when calling a function:
+
+```python
+def add(a, b, c):
+    return a + b + c
+
+nums = [1, 2, 3]
+print(add(*nums))       # unpacks list -> add(1, 2, 3) -> 6
+
+data = {"a": 1, "b": 2, "c": 3}
+print(add(**data))      # unpacks dict -> add(a=1, b=2, c=3) -> 6
+```
+
+**Why use them**
+
+1. **Flexible APIs** — write functions that accept a variable/unknown number of arguments, like Python's built-in `print()` or `max()`.
+2. **Wrapper/decorator functions** — pass through arguments to another function without knowing its exact signature.
+
+```python
+def logger(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__} with args={args}, kwargs={kwargs}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@logger
+def multiply(x, y):
+    return x * y
+
+multiply(3, 4)
+# Calling multiply with args=(3, 4), kwargs={}
+```
+
+3. **Extending existing functions/classes** — accept extra options without listing every parameter explicitly, common in subclassing.
+
+```python
+class Base:
+    def __init__(self, name):
+        self.name = name
+
+class Child(Base):
+    def __init__(self, *args, extra=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.extra = extra
+```
+
+#############################################################
+
+#############################################################
+
+
+**Python Decorators**
+
+A decorator is a function that takes another function (or class) as input and extends or modifies its behavior — without permanently changing its source code. They use the `@decorator_name` syntax placed above a function definition.
+
+**The core idea: functions are first-class objects**
+
+In Python, functions can be passed around, assigned to variables, and returned from other functions — just like any other object. This is what makes decorators possible.
+
+```python
+def shout(text):
+    return text.upper()
+
+def whisper(text):
+    return text.lower()
+
+def greet(func):
+    return func("Hello")
+
+print(greet(shout))     # HELLO
+print(greet(whisper))   # hello
+```
+
+**Building a decorator from scratch**
+
+A decorator wraps a function inside another function, adding behavior before/after the original call.
+
+```python
+def my_decorator(func):
+    def wrapper():
+        print("Something before the function runs")
+        func()
+        print("Something after the function runs")
+    return wrapper
+
+def say_hello():
+    print("Hello!")
+
+say_hello = my_decorator(say_hello)  # manually "decorating"
+say_hello()
+# Something before the function runs
+# Hello!
+# Something after the function runs
+```
+
+**The `@` syntax — syntactic sugar**
+
+Instead of manually reassigning, Python gives you `@decorator_name`:
+
+```python
+def my_decorator(func):
+    def wrapper():
+        print("Before")
+        func()
+        print("After")
+    return wrapper
+
+@my_decorator
+def say_hello():
+    print("Hello!")
+
+say_hello()
+# Before
+# Hello!
+# After
+```
+
+`@my_decorator` above `say_hello` is exactly equivalent to `say_hello = my_decorator(say_hello)`.
+
+**Handling arguments with `*args, **kwargs`**
+
+Real functions take arguments, so the wrapper needs to accept and forward them:
+
+```python
+def my_decorator(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__} with {args}, {kwargs}")
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} returned {result}")
+        return result
+    return wrapper
+
+@my_decorator
+def add(a, b):
+    return a + b
+
+add(3, 5)
+# Calling add with (3, 5), {}
+# add returned 8
+```
+
+**Common real-world use cases**
+
+**1. Timing a function**
+```python
+import time
+
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} took {time.time() - start:.4f}s")
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    time.sleep(1)
+
+slow_function()  # slow_function took 1.0002s
+```
+
+**2. Logging**
+```python
+def logger(func):
+    def wrapper(*args, **kwargs):
+        print(f"Called {func.__name__}({args}, {kwargs})")
+        return func(*args, **kwargs)
+    return wrapper
+```
+
+**3. Access control / authentication**
+```python
+def require_login(func):
+    def wrapper(user, *args, **kwargs):
+        if not user.get("logged_in"):
+            print("Access denied")
+            return
+        return func(user, *args, **kwargs)
+    return wrapper
+
+@require_login
+def view_profile(user):
+    print(f"Welcome {user['name']}")
+
+view_profile({"name": "Alice", "logged_in": False})  # Access denied
+```
+
+**4. Caching/memoization**
+```python
+def cache(func):
+    stored = {}
+    def wrapper(n):
+        if n not in stored:
+            stored[n] = func(n)
+        return stored[n]
+    return wrapper
+
+@cache
+def slow_square(n):
+    print("Computing...")
+    return n ** 2
+
+print(slow_square(4))  # Computing... 16
+print(slow_square(4))  # 16 (no "Computing..." — used cache)
+```
+
+Python's standard library even ships `functools.lru_cache` for this exact purpose.
+
+**Decorators with arguments**
+
+If the decorator itself needs parameters, you need an extra layer of nesting:
+
+```python
+def repeat(times):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            for _ in range(times):
+                result = func(*args, **kwargs)
+            return result
+        return wrapper
+    return decorator
+
+@repeat(3)
+def say_hi():
+    print("Hi!")
+
+say_hi()
+# Hi!
+# Hi!
+# Hi!
+```
+
+Here, `repeat(3)` returns the actual decorator, which is then applied to `say_hi`.
+
+**Preserving function metadata with `functools.wraps`**
+
+Without care, a decorated function loses its original name, docstring, etc. (since `wrapper` shadows it).
+
+```python
+def my_decorator(func):
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+@my_decorator
+def greet():
+    """Says hello"""
+    print("Hello")
+
+print(greet.__name__)  # wrapper  <-- lost the real name!
+print(greet.__doc__)   # None
+```
+
+Fix with `functools.wraps`:
+
+```python
+from functools import wraps
+
+def my_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+@my_decorator
+def greet():
+    """Says hello"""
+    print("Hello")
+
+print(greet.__name__)  # greet   <-- correct!
+print(greet.__doc__)   # Says hello
+```
+
+**Stacking multiple decorators**
+
+Decorators apply bottom-up (closest to the function first):
+
+```python
+@timer
+@logger
+def my_function():
+    ...
+
+# equivalent to:
+my_function = timer(logger(my_function))
+```
+
+**Built-in decorators you already use**
+
+- `@staticmethod` — method that doesn't take `self`
+- `@classmethod` — method that takes `cls` instead of `self`
+- `@property` — turns a method into a read-only attribute
+
+```python
+class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+
+    @property
+    def area(self):
+        return 3.14159 * self.radius ** 2
+
+c = Circle(5)
+print(c.area)  # 78.53975 — called like an attribute, not c.area()
+```
+
+**Class-based decorators**
+
+Decorators don't have to be functions — any callable object works, so classes with `__call__` can be used too:
+
+```python
+class CountCalls:
+    def __init__(self, func):
+        self.func = func
+        self.count = 0
+
+    def __call__(self, *args, **kwargs):
+        self.count += 1
+        print(f"Call #{self.count}")
+        return self.func(*args, **kwargs)
+
+@CountCalls
+def say_hello():
+    print("Hello!")
+
+say_hello()  # Call #1 \n Hello!
+say_hello()  # Call #2 \n Hello!
+```
+
+#######################################################
+
+
+#######################################################
 
 
