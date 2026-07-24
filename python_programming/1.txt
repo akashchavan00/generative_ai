@@ -639,4 +639,58 @@ say_hello()  # Call #2 \n Hello!
 
 #######################################################
 
+what is monkey patching in python?
 
+Monkey patching in Python means modifying or extending a class or module at runtime, 
+without changing its original source code. You "patch" existing code by replacing or 
+adding attributes, methods, or functions dynamically while the program is running.
+
+******Basic Example********
+
+class Dog:
+    def bark(self):
+        return "Woof!"
+
+# Original behavior
+d = Dog()
+print(d.bark())  # Woof!
+
+# Monkey patch: replace the bark method
+def new_bark(self):
+    return "Woof woof! (patched)"
+
+Dog.bark = new_bark
+
+print(d.bark())  # Woof woof! (patched)
+
+*****Module Patching**********
+
+import math
+
+def fake_sqrt(x):
+    return "not really computing sqrt"
+
+math.sqrt = fake_sqrt
+
+print(math.sqrt(16))  # not really computing sqrt
+
+*******************************
+
+Common Use Cases
+Testing — replacing real functions (like API calls or database queries) with mocks, 
+often via unittest.mock.patch
+Fixing bugs in third-party libraries — patching a function that has a bug, without 
+forking the whole library
+Adding features — injecting extra functionality into a class you don't control
+Experimentation/debugging — temporarily changing behavior to trace issues
+
+Why Be Careful With It
+
+Monkey patching is powerful but risky:
+
+Hard to debug — behavior no longer matches the original source code, confusing anyone 
+reading it later
+Fragile — if the library you're patching changes internally, your patch can silently 
+break or behave unexpectedly
+Hidden side effects — a patch applied in one file can affect the whole program, since 
+it changes the actual class/module object in memory
