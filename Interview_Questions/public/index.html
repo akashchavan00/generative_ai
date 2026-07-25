@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenAI Question Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-block">
+      <div class="eyebrow">Self-hosted · File-backed · Yours</div>
+      <h2>Interview Prep Studio</h2>
+      <p>Capture answers with rich formatting, study in a calmer flow, and keep momentum with quick summaries.</p>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="section-label">Quick actions</div>
+      <button class="btn btn-primary full" id="sidebar-add-btn">+ Add question</button>
+      <button class="btn btn-accent full" id="sidebar-quiz-btn">🧠 Quiz me</button>
+      <button class="btn btn-ghost full" id="sidebar-reset-btn">↺ Reset progress</button>
+      <button class="btn btn-ghost full" id="sidebar-export-btn">⬇ Export backup</button>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="section-label">Study snapshot</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <span class="stat-value" id="sidebar-total">0</span>
+          <span class="stat-label">Questions</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="sidebar-mastered">0</span>
+          <span class="stat-label">Mastered</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="sidebar-remaining">0</span>
+          <span class="stat-label">Remaining</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="sidebar-categories">0</span>
+          <span class="stat-label">Categories</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-card tip-card">
+      <div class="section-label">Today’s focus</div>
+      <p id="sidebar-tip">Add a polished answer and practice it out loud.</p>
+    </div>
+  </aside>
+
+  <div class="content-panel">
+    <header>
+      <div class="header-inner">
+        <div class="eyebrow">Self-hosted · File-backed · Yours</div>
+        <h1>GenAI Question Bank</h1>
+        <p class="subhead">Add your own interview questions, organize them by category and difficulty, and track how many you've mastered. Everything is saved to disk on the server.</p>
+
+        <div class="stats-row">
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span id="progress-text">0 / 0 mastered</span>
+              <span id="progress-pct">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+          </div>
+          <button class="btn btn-ghost" id="reset-btn" title="Clear all checkmarks, keep questions">Reset progress</button>
+          <button class="btn btn-ghost" id="export-btn" title="Download all data as JSON">Export backup</button>
+          <button class="btn btn-accent" id="quiz-btn" title="Practice with a random question">Quiz me</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar">
+        <input id="search" type="text" placeholder="Search questions…">
+
+        <select id="difficulty-filter">
+          <option value="">All difficulties</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+
+        <button class="btn btn-primary" id="add-toggle-btn">+ Add question</button>
+      </section>
+
+      <section class="category-row" id="category-row"></section>
+
+      <section class="form-card" id="form-card" hidden>
+        <h2 id="form-title">Add a new question</h2>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="field-category">Category</label>
+            <select id="field-category"></select>
+          </div>
+
+          <div class="field">
+            <label for="field-difficulty">Difficulty</label>
+            <select id="field-difficulty">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-inline" id="new-category-row" hidden>
+          <input id="new-category-input" type="text" placeholder="New category name">
+          <button class="btn btn-small" id="save-category-btn" type="button">Add category</button>
+          <button class="btn btn-small btn-ghost" id="cancel-category-btn" type="button">Cancel</button>
+        </div>
+        <button class="link-btn" id="new-category-toggle" type="button">+ Create a new category</button>
+
+        <div class="field">
+          <label for="field-question">Question</label>
+          <textarea id="field-question" rows="2" placeholder="e.g. What is retrieval-augmented generation?"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="field-concept">Concept (plain-language explanation)</label>
+          <textarea id="field-concept" rows="3" placeholder="Explain the idea simply, like you'd explain it to a friend."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="field-answer">Interview answer (ready to say out loud)</label>
+          <textarea id="field-answer" rows="3" placeholder="A polished 2-4 sentence answer for the interview."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="save-question-btn">Save question</button>
+          <button class="btn btn-ghost" id="cancel-question-btn">Cancel</button>
+          <span class="form-error" id="form-error"></span>
+        </div>
+      </section>
+
+      <section id="card-list"></section>
+      <div class="empty-state" id="empty-state">
+        <p>No questions here yet.</p>
+        <span>Use <strong>+ Add question</strong> above to start building your bank.</span>
+      </div>
+    </main>
+
+    <div class="modal-backdrop" id="quiz-modal" hidden>
+      <div class="modal">
+        <div class="modal-head">
+          <span class="section-label" id="quiz-tag">QUIZ MODE</span>
+          <button class="modal-close" id="quiz-close">×</button>
+        </div>
+        <div class="quiz-question" id="quiz-question">—</div>
+
+        <div id="quiz-reveal-wrap">
+          <button class="btn btn-primary" id="quiz-reveal-btn">Reveal answer</button>
+        </div>
+
+        <div id="quiz-answer-wrap" hidden>
+          <div class="concept">
+            <div class="section-label">The concept</div>
+            <p id="quiz-concept"></p>
+          </div>
+          <div class="answer-box">
+            <div class="section-label">How to say it</div>
+            <p id="quiz-answer"></p>
+          </div>
+          <div class="quiz-actions">
+            <button class="btn btn-ghost" id="quiz-still-learning">Still learning this</button>
+            <button class="btn btn-accent" id="quiz-got-it">Got it ✓</button>
+            <button class="btn btn-primary" id="quiz-next">Next question →</button>
+          </div>
+        </div>
+
+        <p class="quiz-empty" id="quiz-empty" hidden>No questions match the current filters. Add some questions or clear your filters first.</p>
+      </div>
+    </div>
+
+    <footer>
+      Data lives in <code>/data/*.json</code> on the server — it survives closing the browser, refreshing, and restarting the app.
+    </footer>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

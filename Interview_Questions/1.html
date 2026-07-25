@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative AI Mastery - 30 Essential Concepts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            slate: {
+              850: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #e2e8f0;
+    }
+    
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .mesh-bg {
+      position: fixed;
+      top: 0; 
+      left: 0; 
+      width: 100vw; 
+      height: 100vh;
+      z-index: -1;
+      background: 
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .answer-wrapper {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .answer-wrapper.open {
+      grid-template-rows: 1fr;
+    }
+
+    .answer-inner {
+      overflow: hidden;
+    }
+
+    .chevron {
+      transition: transform 0.3s ease;
+    }
+    
+    .chevron.rotate {
+      transform: rotate(180deg);
+    }
+
+    .mode-transition {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+      border-color: rgba(96, 165, 250, 0.3);
+      box-shadow: 0 0 25px rgba(96, 165, 250, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .search-glow:focus {
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
+    }
+
+    .toggle-knob {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen relative">
+
+  <div class="mesh-bg"></div>
+
+  <!-- Header -->
+  <nav class="fixed top-0 w-full z-50 glass-panel border-b border-white/5">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+          <i data-lucide="brain-circuit" class="w-5 h-5 text-blue-400"></i>
+        </div>
+        <span class="font-display font-bold text-xl tracking-tight text-white">
+          GenAI<span class="text-blue-400">Mastery</span>
+        </span>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-semibold uppercase tracking-wider hidden sm:block transition-colors duration-300" id="mode-label">
+          Study Mode
+        </span>
+        <button id="mode-toggle" class="relative inline-flex h-7 w-12 items-center rounded-full bg-slate-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+          <span class="sr-only">Toggle Interview Mode</span>
+          <span id="toggle-knob" class="toggle-knob inline-block h-5 w-5 transform rounded-full bg-white shadow-lg translate-x-1"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="pt-32 pb-16 px-4 text-center relative">
+    <div class="max-w-3xl mx-auto animate-fade-in">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+        30 Essential Interview Questions
+      </div>
+      
+      <h1 class="text-4xl sm:text-6xl font-display font-bold mb-6 leading-tight">
+        Master <span class="gradient-text">Generative AI</span><br>
+        Concepts
+      </h1>
+      
+      <p class="text-slate-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+        Toggle <strong class="text-slate-200">Interview Mode</strong> in the header to switch between 
+        simple explanations and professional, interview-ready answers.
+      </p>
+      
+      <div class="max-w-lg mx-auto relative group">
+        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 transition-colors group-focus-within:text-blue-400"></i>
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Search questions..." 
+          class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 search-glow transition-all"
+        >
+      </div>
+    </div>
+  </header>
+
+  <!-- Questions List -->
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 pb-32 space-y-3" id="questions-container">
+    <!-- Rendered by JS -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-8 text-center text-slate-600 text-sm">
+    <p>Built for Interview Preparation & Learning</p>
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        id: 1,
+        q: "What is Generative AI, and how is it different from traditional AI/ML?",
+        easy: "Traditional AI is like a detective: it looks at data and makes predictions or decisions (e.g., 'Is this email spam?'). Generative AI is like an artist or writer: it learns patterns from data and creates brand new content—like text, images, or music—that has never existed before. Traditional AI analyzes; Generative AI creates.",
+        interview: "Traditional AI and ML are predominantly discriminative, focusing on mapping inputs to outputs for classification or regression. Generative AI diverges by modeling the underlying probability distribution of the training data, allowing it to synthesize novel content—such as text, images, or audio—that mirrors the statistical properties of the training corpus."
+      },
+      {
+        id: 2,
+        q: "What is a Large Language Model (LLM)?",
+        easy: "An LLM is a super-smart computer program trained on massive amounts of text from books, websites, and articles. Because it has seen so much language, it understands grammar, facts, reasoning, and even coding. You can ask it questions or give it tasks, and it responds in natural human language by predicting the next most likely word.",
+        interview: "A Large Language Model is a deep neural network, typically utilizing the Transformer architecture with billions of parameters. It is pretrained on massive text corpora via self-supervised learning objectives, such as next-token prediction, to develop a generalized understanding of language syntax, semantics, and world knowledge."
+      },
+      {
+        id: 3,
+        q: "What is the Transformer architecture?",
+        easy: "Before Transformers, AI read text word-by-word, which was slow and caused it to forget the beginning by the end. The Transformer architecture, introduced in the paper 'Attention is All You Need,' allows the AI to look at every word in a sentence simultaneously and figure out which words are related to each other. This makes it incredibly fast and effective at understanding context.",
+        interview: "The Transformer is a deep learning architecture that eschews recurrence in favor of self-attention mechanisms. This allows for parallel processing of input sequences and captures long-range dependencies more effectively than RNNs or LSTMs. It consists of encoder and decoder stacks, though modern LLMs often use only one or the other."
+      },
+      {
+        id: 4,
+        q: "What is the difference between discriminative and generative models?",
+        easy: "A discriminative model is like a security guard checking IDs; it decides which category something belongs to. A generative model is like a fashion designer; it learns the style of clothes and then sews entirely new outfits. One separates data into classes, while the other fabricates new data samples.",
+        interview: "Discriminative models learn the conditional probability P(Y|X)—the boundary between classes. Generative models learn the joint probability P(X, Y), or simply P(X), capturing the underlying data distribution. This allows generative models to produce new samples, whereas discriminative models are restricted to inference on existing data."
+      },
+      {
+        id: 5,
+        q: "What are tokens in the context of LLMs?",
+        easy: "Tokens are the small pieces of words that an LLM actually reads. A token might be a whole word like 'cat,' or part of a word like 'unbelievable' split into 'un,' 'believ,' and 'able.' The model doesn't see raw letters; it sees tokens converted into numbers.",
+        interview: "In the context of LLMs, a token is the fundamental unit of text processing. It can represent a word, a subword, or a character, determined by a tokenization algorithm like Byte Pair Encoding (BPE). The model's vocabulary is a finite set of these tokens, and all input text is converted into sequences of token IDs for processing."
+      },
+      {
+        id: 6,
+        q: "What is tokenization, and why is it needed?",
+        easy: "Tokenization is the process of cutting text into tokens. It is needed because computers cannot read raw text directly; they need numbers. By turning words into tokens (and then into numerical IDs), the AI can perform mathematical operations on language to understand and generate it.",
+        interview: "Tokenization is the preprocessing step that converts raw text into a sequence of discrete tokens mapped to numerical IDs. It is essential because neural networks operate on numerical tensors, not symbolic strings. The choice of tokenization strategy impacts vocabulary size, out-of-vocabulary handling, and the model's ability to process multilingual or technical text."
+      },
+      {
+        id: 7,
+        q: "What is an embedding in NLP/ML?",
+        easy: "An embedding is a list of numbers that represents a word's meaning. Imagine every word is placed in a multi-dimensional space. Words that mean similar things, like 'king' and 'queen,' end up close together. It helps the computer understand that 'happy' and 'joyful' are related concepts.",
+        interview: "An embedding is a dense, low-dimensional vector representation of a token or word in a continuous vector space. It encodes semantic and syntactic meaning such that similar words are proximate in the embedding space. These vectors are learned during training and serve as the input representation for downstream neural network layers."
+      },
+      {
+        id: 8,
+        q: "What is the difference between GPT and BERT?",
+        easy: "GPT and BERT are both Transformers, but they read text differently. GPT reads left-to-right, like writing a story sentence by sentence. It is great at generating text. BERT reads the whole sentence at once in both directions, like solving a fill-in-the-blank puzzle. It excels at understanding and analyzing text.",
+        interview: "GPT is an autoregressive, decoder-only Transformer trained for left-to-right language modeling, making it optimal for text generation. BERT is an encoder-only, bidirectional Transformer trained on masked language modeling and next-sentence prediction, making it superior for discriminative natural language understanding tasks such as classification and named entity recognition."
+      },
+      {
+        id: 9,
+        q: "What does 'attention mechanism' mean in deep learning?",
+        easy: "Attention is the mechanism that lets the model focus on the important parts of the input. If you say, 'The cat sat on the mat because it was tired,' attention helps the model connect the word 'it' to 'cat' instead of 'mat.' It calculates relevance scores between every pair of words in the sentence.",
+        interview: "The attention mechanism computes a weighted sum of input representations, where the weights are determined by a compatibility function between queries and keys. Self-attention, specifically, allows each token in a sequence to attend to all other tokens, capturing contextual relationships and dependencies irrespective of their positional distance in the input."
+      },
+      {
+        id: 10,
+        q: "What is a prompt, and what is prompt engineering?",
+        easy: "A prompt is simply the text you type into the AI. Prompt engineering is the skill of writing that text carefully to get the best result. It is like learning how to ask a genie for a wish so precisely that you get exactly what you want, without any weird side effects.",
+        interview: "A prompt is the input text provided to a language model to elicit a desired response. Prompt engineering is the empirical methodology of designing and refining prompts—often including instructions, context, or examples—to maximize the model's performance on a specific task without updating the model's underlying parameters."
+      },
+      {
+        id: 11,
+        q: "What is fine-tuning in the context of LLMs?",
+        easy: "Fine-tuning is like sending a general doctor to specialize in heart surgery. You take an AI that already knows a lot about language and train it a little bit more on a specific dataset—like legal documents or medical papers—so it becomes an expert in that narrow field.",
+        interview: "Fine-tuning is a transfer learning technique where a pretrained model is further trained on a smaller, task-specific labeled dataset. This process adapts the generalized representations learned during pretraining to the nuances of a downstream task, such as sentiment analysis or domain-specific question answering, typically requiring significantly less data and compute than training from scratch."
+      },
+      {
+        id: 12,
+        q: "What is the difference between pretraining and fine-tuning?",
+        easy: "Pretraining is the 'schooling' phase where the AI learns general knowledge from the entire internet. It is expensive and takes weeks on supercomputers. Fine-tuning is the 'internship' phase where the AI learns a specific job. It is much cheaper and faster.",
+        interview: "Pretraining involves training a model on a vast, general-purpose corpus using self-supervised objectives to learn broad linguistic representations. It is computationally intensive. Fine-tuning is the subsequent phase of supervised or instruction-based training on a narrower dataset to align the model's outputs with specific tasks, behaviors, or safety guidelines."
+      },
+      {
+        id: 13,
+        q: "What is temperature in text generation, and what does it control?",
+        easy: "Temperature controls how creative or risky the AI is when picking the next word. A low temperature (like 0.1) makes the AI conservative and repetitive, always picking the safest word. A high temperature (like 1.0 or more) makes it wild and creative, sometimes picking surprising words.",
+        interview: "Temperature is a hyperparameter applied to the softmax function during sampling. It scales the logits before exponentiation. As temperature approaches zero, the distribution becomes sharper, converging to a greedy, deterministic selection. Higher temperatures flatten the probability distribution, increasing randomness and lexical diversity in the generated output."
+      },
+      {
+        id: 14,
+        q: "What is top-k sampling and top-p (nucleus) sampling?",
+        easy: "Top-k sampling means the AI only considers the 'k' most likely next words. If k=50, it ignores the long tail of weird words. Top-p (nucleus) sampling is smarter: it considers only the smallest set of most likely words whose combined probability adds up to 'p' (e.g., 90%). This adapts dynamically to the situation.",
+        interview: "Top-k sampling restricts the candidate vocabulary to the k highest-probability tokens at each generation step. Top-p, or nucleus sampling, selects the minimal set of tokens whose cumulative probability mass exceeds a threshold p. Top-p is generally preferred as it dynamically adjusts the candidate pool size based on the model's confidence, avoiding the rigidity of a fixed k."
+      },
+      {
+        id: 15,
+        q: "What is a hallucination in generative AI?",
+        easy: "Hallucination is when the AI makes stuff up. It sounds very confident and convincing, but the facts are completely wrong. It is like a student who didn't study but writes a very persuasive essay full of fake citations and invented history.",
+        interview: "Hallucination refers to the generation of content that is syntactically plausible and semantically coherent but factually incorrect, ungrounded, or inconsistent with the provided source material. It remains a critical challenge in generative AI, arising from the model's objective of predicting probable sequences rather than retrieving verified facts."
+      },
+      {
+        id: 16,
+        q: "What is zero-shot learning?",
+        easy: "Zero-shot learning means asking the AI to do something it has never explicitly been trained to do, without giving it any examples. You just describe the task, and it figures it out using its general knowledge. Like asking a talented improviser to act like a pirate without any rehearsal.",
+        interview: "Zero-shot learning refers to a model's ability to perform a novel task solely from a natural language instruction or prompt, without having seen any labeled examples of that task during training. It relies entirely on the model's generalized knowledge and semantic understanding acquired during pretraining."
+      },
+      {
+        id: 17,
+        q: "What is few-shot learning?",
+        easy: "Few-shot learning is giving the AI two or three examples of the task before asking it to do the job. It is like showing someone a few solved math problems before asking them to solve a new one. These examples are included right in the prompt.",
+        interview: "Few-shot learning, or in-context learning, involves prepending a small number of input-output exemplars to the prompt. This conditions the model on the desired task format and reasoning pattern without any gradient updates, leveraging the model's capacity for pattern matching to generalize from limited contextual examples."
+      },
+      {
+        id: 18,
+        q: "What is a chatbot, and how does it relate to generative AI?",
+        easy: "A chatbot is a program designed to talk to humans. Old chatbots followed rigid scripts. Modern chatbots, powered by Generative AI, actually understand context and generate fresh, relevant replies every time, making the conversation feel natural and human-like.",
+        interview: "A chatbot is a conversational interface designed to simulate human dialogue. While rule-based chatbots rely on decision trees, modern generative AI chatbots leverage Large Language Models to produce context-aware, dynamic responses. They maintain conversational state across turns and can handle open-domain queries beyond their initial training scope."
+      },
+      {
+        id: 19,
+        q: "What are some popular generative AI models?",
+        easy: "Popular text models include GPT-4, Claude, and Gemini. For images, DALL-E 3, Midjourney, and Stable Diffusion create art from text descriptions. For audio, Whisper transcribes speech, and models like Suno generate music. There are also video models like Sora.",
+        interview: "The generative AI landscape includes LLMs such as GPT-4, Claude, and Gemini for text synthesis; diffusion models like DALL-E 3, Stable Diffusion, and Midjourney for image generation; and multimodal models like Sora for video. In audio, Whisper handles speech recognition, while neural audio synthesis models generate music and soundscapes."
+      },
+      {
+        id: 20,
+        q: "What is the difference between generative AI for text, image, and audio?",
+        easy: "The core idea is the same—creating new data—but the medium changes. Text models predict the next word. Image models start with random noise and gradually sculpt it into a picture based on your description. Audio models generate sound waves or spectrograms that match a prompt. Each requires different mathematical techniques.",
+        interview: "While all generative AI models learn underlying data distributions, the architectures differ by modality. Text generation relies on autoregressive token prediction. Image generation predominantly uses diffusion models or GANs to iteratively denoise latent representations. Audio generation often operates on spectrograms or raw waveforms using diffusion or transformer-based architectures."
+      },
+      {
+        id: 21,
+        q: "What is an autoencoder?",
+        easy: "An autoencoder is a neural network that learns to copy its input to its output, but with a twist. It has a 'bottleneck' in the middle that forces it to compress the data into a smaller, essential summary. It is used for tasks like cleaning up noisy images or finding patterns.",
+        interview: "An autoencoder is an unsupervised neural network consisting of an encoder that compresses input into a latent-space representation, and a decoder that reconstructs the input from that representation. The bottleneck layer enforces dimensionality reduction, making it useful for denoising, anomaly detection, and feature learning."
+      },
+      {
+        id: 22,
+        q: "What is a GAN (Generative Adversarial Network)?",
+        easy: "A GAN is a pair of neural networks playing a game. The Generator creates fake images, and the Discriminator tries to spot the fakes. They compete until the Generator becomes so good that the Discriminator can't tell the difference between real and fake photos.",
+        interview: "A Generative Adversarial Network consists of two networks—a Generator and a Discriminator—trained in a minimax adversarial framework. The Generator learns to map random noise to data-space, while the Discriminator learns to distinguish real data from generated samples. Nash equilibrium is reached when the generator produces samples indistinguishable from the real distribution."
+      },
+      {
+        id: 23,
+        q: "What is a VAE (Variational Autoencoder)?",
+        easy: "A VAE is a type of autoencoder that doesn't just compress data, but learns a probability distribution of the data. This means instead of just copying, it can generate brand new data by sampling from this learned distribution. It is like learning the recipe for a style of painting rather than just copying one painting.",
+        interview: "A Variational Autoencoder is a generative model that learns a parameterized probability distribution in latent space. Unlike standard autoencoders, VAEs encode inputs as distributions (mean and variance) and use the reparameterization trick to enable backpropagation through stochastic nodes, allowing for the generation of novel samples by sampling from the prior."
+      },
+      {
+        id: 24,
+        q: "What is context length/window in LLMs?",
+        easy: "Context length is the AI's short-term memory limit, measured in tokens. If a model has a context window of 4,000 tokens, it can only 'remember' and consider the last 4,000 tokens of the conversation. If you exceed this, the AI starts forgetting the beginning of the chat.",
+        interview: "Context length, or context window, defines the maximum sequence length—measured in tokens—that a model can process in a single forward pass. It is constrained by the quadratic complexity of self-attention with respect to sequence length and the positional embeddings learned during training. Exceeding this limit results in truncated or ignored input."
+      },
+      {
+        id: 25,
+        q: "What is the difference between supervised and unsupervised learning?",
+        easy: "Supervised learning is like learning with an answer key. The AI is trained on data that is clearly labeled (e.g., 'this is a cat'). Unsupervised learning is like exploring a library without a catalog. The AI looks at unlabeled data and tries to find hidden patterns or groupings on its own.",
+        interview: "Supervised learning involves training on labeled datasets where each input is paired with a correct output, optimizing a loss function based on prediction error. Unsupervised learning operates on unlabeled data to infer inherent structures, such as clustering or density estimation, without explicit target variables guiding the optimization."
+      },
+      {
+        id: 26,
+        q: "What is overfitting, and why is it a concern in generative models?",
+        easy: "Overfitting is when the AI memorizes the training data instead of learning general patterns. It is like a student who memorizes the answers to last year's exam but fails the new one. In generative models, this leads to outputs that are just copies of training data rather than original creations.",
+        interview: "Overfitting occurs when a model learns the noise and idiosyncrasies of the training data rather than the underlying generalized distribution. In generative models, this manifests as mode collapse or memorization, where the model replicates training samples verbatim, failing to generate diverse or novel outputs and exhibiting poor generalization."
+      },
+      {
+        id: 27,
+        q: "What is a chat completion vs. text completion API?",
+        easy: "A text completion API simply continues whatever text you give it. A chat completion API is structured like a conversation, with different roles: 'system' (sets the rules), 'user' (asks the question), and 'assistant' (the AI's reply). The chat format is better for building conversational apps.",
+        interview: "A text completion API accepts a single prompt string and generates a continuation based on autoregressive probability. A chat completion API structures input as an ordered list of messages with roles—system, user, and assistant—enabling stateful, multi-turn dialogue management and behavioral conditioning via the system prompt."
+      },
+      {
+        id: 28,
+        q: "What is API rate limiting, and why does it matter when using LLM APIs?",
+        easy: "Rate limiting is a restriction on how many times you can call an API in a minute or hour. It matters because if you build an app that hits the API too hard, you will get blocked or charged huge fees. It forces developers to write efficient code and cache results.",
+        interview: "API rate limiting is a throttling mechanism imposed by service providers to regulate the number of requests a client can make within a specified time window. It is critical for ensuring service availability, managing infrastructure costs, preventing abuse, and enforcing tiered subscription models for LLM API consumers."
+      },
+      {
+        id: 29,
+        q: "What is the role of a system prompt vs. a user prompt?",
+        easy: "The system prompt is the 'background instructions' given to the AI to define its personality and rules (e.g., 'You are a helpful tutor'). The user prompt is the actual question or message from the person using the app. One sets the stage, the other is the performance.",
+        interview: "The system prompt serves as a high-level behavioral directive that governs the model's persona, constraints, and operational scope across the session. The user prompt is the specific query or task input provided by the end-user. Separating these concerns allows developers to maintain consistent application behavior independently of user interactions."
+      },
+      {
+        id: 30,
+        q: "What are some common use cases of Generative AI in industry?",
+        easy: "Industries use it for writing marketing copy, generating code for developers, creating virtual customer support agents, designing graphics, personalizing education, accelerating drug discovery by generating molecular structures, and summarizing long legal or medical documents.",
+        interview: "Industrial applications of Generative AI span content generation, software development via copilots, automated customer support through conversational agents, creative design in marketing, personalized learning platforms, molecular generation in pharmaceuticals, and intelligent document processing for legal and healthcare sectors."
+      }
+    ];
+
+    const container = document.getElementById('questions-container');
+    const searchInput = document.getElementById('search-input');
+    const modeToggle = document.getElementById('mode-toggle');
+    const toggleKnob = document.getElementById('toggle-knob');
+    const modeLabel = document.getElementById('mode-label');
+    
+    let isInterviewMode = false;
+    let openStates = new Set();
+
+    function renderQuestions(filter = "") {
+      container.innerHTML = "";
+      
+      const filtered = questions.filter(item => 
+        item.q.toLowerCase().includes(filter.toLowerCase()) ||
+        item.easy.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-500">
+            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+            <p>No questions found matching "${filter}"</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      filtered.forEach((item, idx) => {
+        const globalIdx = questions.indexOf(item);
+        const isOpen = openStates.has(globalIdx);
+        const answerText = isInterviewMode ? item.interview : item.easy;
+        const badgeColor = isInterviewMode ? "bg-purple-500/10 text-purple-400 border-purple-500/20" : "bg-blue-500/10 text-blue-400 border-blue-500/20";
+        const badgeText = isInterviewMode ? "Interview" : "Study";
+
+        const card = document.createElement('div');
+        card.className = `glass-panel rounded-xl overflow-hidden card-hover animate-slide-up`;
+        card.style.animationDelay = `${idx * 0.03}s`;
+        
+        card.innerHTML = `
+          <button class="w-full px-5 py-4 sm:px-6 sm:py-5 flex items-start justify-between text-left gap-4 focus:outline-none group" onclick="toggleAccordion(${globalIdx})">
+            <div class="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+              <span class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${badgeColor} flex items-center justify-center font-display font-bold text-xs sm:text-sm border mt-0.5">
+                ${item.id}
+              </span>
+              <div class="min-w-0">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-100 group-hover:text-blue-300 transition-colors leading-snug">
+                  ${item.q}
+                </h3>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0 mt-1">
+              <span class="hidden sm:inline-block text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md ${badgeColor}">
+                ${badgeText}
+              </span>
+              <i data-lucide="chevron-down" class="chevron w-5 h-5 text-slate-500 ${isOpen ? 'rotate' : ''}" id="chevron-${globalIdx}"></i>
+            </div>
+          </button>
+          
+          <div class="answer-wrapper ${isOpen ? 'open' : ''}" id="wrapper-${globalIdx}">
+            <div class="answer-inner">
+              <div class="px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
+                <div class="pl-10 sm:pl-12 border-t border-white/5 pt-4">
+                  <p class="text-slate-300 leading-relaxed text-sm sm:text-base mode-transition" id="text-${globalIdx}">
+                    ${answerText}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      });
+      
+      lucide.createIcons();
+    }
+
+    window.toggleAccordion = (index) => {
+      const wrapper = document.getElementById(`wrapper-${index}`);
+      const chevron = document.getElementById(`chevron-${index}`);
+      
+      if (openStates.has(index)) {
+        openStates.delete(index);
+        wrapper.classList.remove('open');
+        chevron.classList.remove('rotate');
+      } else {
+        openStates.add(index);
+        wrapper.classList.add('open');
+        chevron.classList.add('rotate');
+      }
+    };
+
+    modeToggle.addEventListener('click', () => {
+      isInterviewMode = !isInterviewMode;
+      
+      if (isInterviewMode) {
+        toggleKnob.classList.remove('translate-x-1');
+        toggleKnob.classList.add('translate-x-6');
+        modeToggle.classList.remove('bg-slate-700');
+        modeToggle.classList.add('bg-purple-600');
+        modeLabel.textContent = "Interview Mode";
+        modeLabel.classList.remove('text-slate-400');
+        modeLabel.classList.add('text-purple-400');
+      } else {
+        toggleKnob.classList.add('translate-x-1');
+        toggleKnob.classList.remove('translate-x-6');
+        modeToggle.classList.add('bg-slate-700');
+        modeToggle.classList.remove('bg-purple-600');
+        modeLabel.textContent = "Study Mode";
+        modeLabel.classList.add('text-slate-400');
+        modeLabel.classList.remove('text-purple-400');
+      }
+
+      renderQuestions(searchInput.value);
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      renderQuestions(e.target.value);
+    });
+
+    // Initial render
+    renderQuestions();
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+## Easy (30 Questions)
+
+1. What is Generative AI, and how is it different from traditional AI/ML?
+2. What is a Large Language Model (LLM)?
+3. What is the Transformer architecture?
+4. What is the difference between discriminative and generative models?
+5. What are tokens in the context of LLMs?
+6. What is tokenization, and why is it needed?
+7. What is an embedding in NLP/ML?
+8. What is the difference between GPT and BERT?
+9. What does "attention mechanism" mean in deep learning?
+10. What is a prompt, and what is prompt engineering?
+11. What is fine-tuning in the context of LLMs?
+12. What is the difference between pretraining and fine-tuning?
+13. What is temperature in text generation, and what does it control?
+14. What is top-k sampling and top-p (nucleus) sampling?
+15. What is a hallucination in generative AI?
+16. What is zero-shot learning?
+17. What is few-shot learning?
+18. What is a chatbot, and how does it relate to generative AI?
+19. What are some popular generative AI models (GPT, DALL·E, Stable Diffusion, etc.)?
+20. What is the difference between generative AI for text, image, and audio?
+21. What is an autoencoder?
+22. What is a GAN (Generative Adversarial Network)?
+23. What is a VAE (Variational Autoencoder)?
+24. What is context length/window in LLMs?
+25. What is the difference between supervised and unsupervised learning?
+26. What is overfitting, and why is it a concern in generative models?
+27. What is a chat completion vs. text completion API?
+28. What is API rate limiting, and why does it matter when using LLM APIs?
+29. What is the role of a system prompt vs. a user prompt?
+30. What are some common use cases of Generative AI in industry?
+
+
+
+
+
+
+## Medium (30 Questions)
+
+1. Explain the self-attention mechanism in Transformers.
+2. What is the difference between encoder-only, decoder-only, and encoder-decoder architectures?
+3. What is positional encoding, and why is it needed in Transformers?
+4. How does beam search differ from greedy decoding?
+5. What is RLHF (Reinforcement Learning from Human Feedback), and why is it used?
+6. What is the difference between RAG (Retrieval-Augmented Generation) and fine-tuning?
+7. How does a vector database work, and why is it used with LLMs?
+8. What is cosine similarity, and how is it used in embedding search?
+9. What is LoRA (Low-Rank Adaptation), and why is it useful for fine-tuning?
+10. What is quantization in the context of deploying LLMs?
+11. What is the difference between PEFT (Parameter-Efficient Fine-Tuning) and full fine-tuning?
+12. How would you evaluate the quality of a generative AI model's output?
+13. What are perplexity and BLEU score, and what do they measure?
+14. What is prompt chaining, and when would you use it?
+15. What is chain-of-thought (CoT) prompting?
+16. What is the difference between in-context learning and fine-tuning?
+17. What are guardrails in the context of LLM applications, and why are they needed?
+18. What is model distillation, and why is it useful?
+19. What is the difference between open-source and closed-source LLMs (e.g., LLaMA vs. GPT-4)?
+20. What is a diffusion model, and how does it differ from a GAN?
+21. How does Stable Diffusion generate images from text?
+22. What is CLIP, and how is it used in text-to-image generation?
+23. What is catastrophic forgetting, and how is it addressed during fine-tuning?
+24. What are function calling/tool use capabilities in LLMs?
+25. What is an AI agent, and how does it differ from a standard chatbot?
+26. What is the role of embeddings in a RAG pipeline?
+27. What is chunking, and why does chunk size matter in RAG systems?
+28. What are common challenges when deploying LLMs in production?
+29. What is model alignment, and why is it important?
+30. What is the difference between latency and throughput in LLM inference, and how would you optimize each?
+
+## Hard (30 Questions)
+
+1. Explain the mathematics behind scaled dot-product attention.
+2. How does multi-head attention improve model performance compared to single-head attention?
+3. Explain how KV (key-value) caching works and why it improves inference efficiency.
+4. What is the difference between absolute, relative, and rotary positional embeddings (RoPE)?
+5. Explain the architecture and training objective differences between GPT-style and T5-style models.
+6. How does Mixture of Experts (MoE) architecture work, and what are its trade-offs?
+7. Explain the PPO (Proximal Policy Optimization) algorithm as used in RLHF.
+8. What is DPO (Direct Preference Optimization), and how does it differ from RLHF/PPO?
+9. How would you design an evaluation framework for a production LLM application (covering accuracy, safety, bias, latency)?
+10. Explain how flash attention improves compute/memory efficiency during training and inference.
+11. What are scaling laws in LLMs, and how do they inform decisions about model size and training data?
+12. How does speculative decoding speed up LLM inference?
+13. Explain how you would architect a production-grade RAG system for a large enterprise (with millions of documents).
+14. What are the trade-offs between dense retrieval, sparse retrieval (BM25), and hybrid retrieval in RAG?
+15. How do you mitigate hallucinations in a RAG-based system beyond simply improving retrieval?
+16. Explain how a diffusion model's forward and reverse processes work mathematically.
+17. What is classifier-free guidance in diffusion models, and how does it affect generation quality?
+18. How would you fine-tune an LLM using QLoRA, and what makes it more memory-efficient than standard LoRA?
+19. Explain how you would detect and mitigate bias in a generative model's outputs.
+20. What is model watermarking in generative AI, and how does it work?
+21. How would you design a system to detect AI-generated content (text or images)?
+22. Explain the concept of "context window rot" or performance degradation with very long contexts, and how it's mitigated.
+23. What are the key differences between GPT-4-class models and smaller open-source LLMs in terms of emergent capabilities?
+24. How would you architect a multi-agent LLM system for a complex task (e.g., autonomous research or coding)?
+25. Explain how tokenizer choice (BPE vs. WordPiece vs. SentencePiece) affects model performance and multilingual capability.
+26. How would you handle prompt injection attacks in an LLM-powered application?
+27. What techniques would you use to reduce inference cost for a high-traffic LLM application without sacrificing quality?
+28. Explain how you would design a reward model for RLHF, and what pitfalls (e.g., reward hacking) can occur.
+29. How does model merging (e.g., SLERP, TIES-merging) work, and when would you use it instead of fine-tuning?
+30. Explain the trade-offs between training a model from scratch, continued pretraining, and instruction fine-tuning for a domain-specific use case.
