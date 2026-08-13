@@ -11,6 +11,7 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { spawnSync } = require("child_process");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -22,6 +23,18 @@ const PROGRESS_FILE = path.join(DATA_DIR, "progress.json");
 
 const DEFAULT_CATEGORIES = ["Machine Learning", "Deep Learning", "AI", "Gen-AI"];
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
+const AI_TOPIC_POOL = [
+  "transformers",
+  "gradient descent",
+  "retrieval augmented generation",
+  "attention mechanism",
+  "large language model",
+  "convolutional neural network",
+  "vector embedding",
+  "diffusion model",
+  "reinforcement learning",
+  "prompt engineering",
+];
 
 // ---------------------------------------------------------------------------
 // Storage helpers
@@ -55,6 +68,10 @@ ensureDataFiles();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.redirect("/index.html");
+});
 
 // ---------------------------------------------------------------------------
 // Categories
@@ -250,6 +267,23 @@ app.get("/api/export", (req, res) => {
   res.setHeader("Content-Disposition", 'attachment; filename="genai-question-bank-backup.json"');
   res.json(payload);
 });
+
+function fallbackTopicResponse(topic) {
+  const fallbackMap = {
+    transformers: "Transformers are neural networks designed to understand relationships in text and other sequences. They use attention to focus on the most relevant parts of the input, which makes them powerful for language tasks like summarization and chat.",
+    "gradient descent": "Gradient descent is an optimization method that helps a model improve by reducing its error step by step. The model adjusts its weights in the direction that lowers loss, making training more accurate over time.",
+    "retrieval augmented generation": "Retrieval augmented generation combines a language model with a search step. The system first finds relevant information from a knowledge source, then uses that context to generate a more grounded and accurate answer.",
+    "attention mechanism": "Attention helps a model decide which parts of the input matter most. Instead of treating everything equally, it gives more importance to useful signals, improving understanding and generation quality.",
+    "large language model": "A large language model is a neural network trained on massive text data. It learns patterns in language so it can generate, summarize, and answer questions in a human-like way.",
+    "convolutional neural network": "A convolutional neural network is a model that specializes in visual data. It uses small filters to detect patterns such as edges, textures, and shapes, which makes it effective for image tasks.",
+    "vector embedding": "A vector embedding is a compact numerical representation of meaning. Similar ideas are placed closer together in this space, allowing machines to compare, search, and reason about content more effectively.",
+    "diffusion model": "A diffusion model learns by gradually adding and removing noise from data. This process helps it generate realistic images or samples by reversing the noise step by step.",
+    "reinforcement learning": "Reinforcement learning trains an agent by rewarding good actions and discouraging bad ones. Over time, the agent learns a strategy that maximizes long-term success in a task.",
+    "prompt engineering": "Prompt engineering is the practice of crafting clear instructions to guide an AI model. Good prompts improve the quality, structure, and relevance of the model's outputs.",
+  };
+
+  return fallbackMap[topic] || `A ${topic} is a key idea in modern AI. It helps systems learn patterns from data and make better predictions or decisions over time.`;
+}
 
 app.listen(PORT, () => {
   console.log(`GenAI Question Bank running at http://localhost:${PORT}`);

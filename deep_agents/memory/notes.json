@@ -1,0 +1,7 @@
+[
+  {
+    "title": "Explanation of DBSCAN Algorithm",
+    "content": "DBSCAN (Density-Based Spatial Clustering of Applications with Noise) is a popular unsupervised machine learning algorithm used for clustering. \n\nKey Concepts:\n1. Core Points: A point is a core point if at least 'MinPts' points are within a distance 'eps' (epsilon) from it.\n2. Border Points: A point is a border point if it is within 'eps' of a core point but has fewer than 'MinPts' in its own neighborhood.\n3. Noise Points: Any point that is neither a core point nor a border point is considered noise (an outlier).\n\nHow it works:\n- It starts by picking an arbitrary point. If it finds enough neighbors (based on 'eps' and 'MinPts'), a cluster is formed.\n- It then expands the cluster by recursively checking the neighbors of its neighbors.\n- If a point does not belong to any cluster, it is labeled as noise.\n\nAdvantages:\n- Does not require specifying the number of clusters (unlike K-Means).\n- Can discover clusters of arbitrary shapes (e.g., circles, ovals, irregular shapes).\n- Robust to outliers.\n\nDisadvantages:\n- Struggles with clusters of varying densities.\n- Performance depends heavily on the choice of 'eps' and 'MinPts'.",
+    "timestamp": "2026-08-13T22:36:53.613404"
+  }
+]

@@ -2,3 +2,6 @@ mcp/.env
 guardrails/nemo_guard/.env
 guardrails/.env
 guardrails/nemo_guard/venv311/
+chatbot/.env
+agentic_ai/.env
+guardrails/nemo_guard/venv311

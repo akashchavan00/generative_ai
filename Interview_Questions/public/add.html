@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Question | GenAI Question Bank</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="add">
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <a class="brand-link" href="/">Interview Prep Studio</a>
+        <span class="muted">Create or update a question</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" id="theme-toggle" type="button">☀ Light</button>
+        <a class="btn btn-ghost" href="/browse.html">← Back to questions</a>
+      </div>
+    </header>
+
+    <main class="content-wrap">
+      <section class="form-card">
+        <div class="form-head">
+          <h1 id="form-title">Add a new question</h1>
+          <p>Craft a polished answer with formatting, then save it to your question bank.</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="field-category">Category</label>
+            <select id="field-category"></select>
+          </div>
+          <div class="field">
+            <label for="field-difficulty">Difficulty</label>
+            <select id="field-difficulty">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-inline" id="new-category-row" hidden>
+          <input id="new-category-input" type="text" placeholder="New category name" />
+          <button class="btn btn-small btn-primary" id="save-category-btn" type="button">Add category</button>
+          <button class="btn btn-small btn-ghost" id="cancel-category-btn" type="button">Cancel</button>
+        </div>
+        <button class="link-btn" id="new-category-toggle" type="button">+ Create a new category</button>
+
+        <div class="field">
+          <label for="field-question">Question</label>
+          <textarea id="field-question" rows="2" placeholder="e.g. What is retrieval-augmented generation?"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Concept</label>
+          <div class="editor-toolbar">
+            <button class="editor-btn" data-cmd="bold" type="button"><strong>B</strong></button>
+            <button class="editor-btn" data-cmd="italic" type="button"><em>I</em></button>
+            <button class="editor-btn" data-cmd="underline" type="button"><u>U</u></button>
+            <select id="font-size-select">
+              <option value="">Size</option>
+              <option value="1">Small</option>
+              <option value="3">Medium</option>
+              <option value="5">Large</option>
+              <option value="7">XL</option>
+            </select>
+            <input id="font-color-input" type="color" value="#ffc46f" />
+          </div>
+          <div id="concept-editor" class="rich-editor" contenteditable="true"></div>
+        </div>
+
+        <div class="field">
+          <label>Answer</label>
+          <div class="editor-toolbar">
+            <button class="editor-btn" data-cmd="bold" type="button"><strong>B</strong></button>
+            <button class="editor-btn" data-cmd="italic" type="button"><em>I</em></button>
+            <button class="editor-btn" data-cmd="underline" type="button"><u>U</u></button>
+            <select id="answer-font-size-select">
+              <option value="">Size</option>
+              <option value="1">Small</option>
+              <option value="3">Medium</option>
+              <option value="5">Large</option>
+              <option value="7">XL</option>
+            </select>
+            <input id="answer-font-color-input" type="color" value="#69d2a0" />
+          </div>
+          <div id="answer-editor" class="rich-editor" contenteditable="true"></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="save-question-btn" type="button">Save question</button>
+          <a class="btn btn-ghost" href="/browse.html">Cancel</a>
+          <span class="form-error" id="form-error"></span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

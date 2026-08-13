@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Questions | GenAI Question Bank</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="browse">
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <a class="brand-link" href="/">Interview Prep Studio</a>
+        <span class="muted">Question bank</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" id="theme-toggle" type="button">☀ Light</button>
+        <a class="btn btn-primary" href="/add.html">+ Add question</a>
+      </div>
+    </header>
+
+    <main class="content-wrap">
+      <section class="toolbar-card">
+        <div class="toolbar-row">
+          <input id="search" type="text" placeholder="Search questions…" />
+          <select id="difficulty-filter">
+            <option value="">All difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+          <button class="btn btn-accent" id="quiz-btn" type="button">🧠 Quiz me</button>
+        </div>
+        <div class="category-row" id="category-row"></div>
+      </section>
+
+      <section class="stats-card">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span id="progress-text">0 / 0 mastered</span>
+            <span id="progress-pct">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="inline-actions">
+          <button class="btn btn-ghost" id="reset-btn" type="button">Reset progress</button>
+          <button class="btn btn-ghost" id="export-btn" type="button">Export backup</button>
+        </div>
+      </section>
+
+      <section id="card-list"></section>
+      <div class="empty-state" id="empty-state">
+        <p>No questions here yet.</p>
+        <span>Use the add page to build your interview bank.</span>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="quiz-modal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <span class="section-label">QUIZ MODE</span>
+        <button class="modal-close" id="quiz-close" type="button">×</button>
+      </div>
+      <div class="quiz-question" id="quiz-question">—</div>
+      <div id="quiz-reveal-wrap">
+        <button class="btn btn-primary" id="quiz-reveal-btn" type="button">Reveal answer</button>
+      </div>
+      <div id="quiz-answer-wrap" hidden>
+        <div class="concept">
+          <div class="section-label">The concept</div>
+          <p id="quiz-concept"></p>
+        </div>
+        <div class="answer-box">
+          <div class="section-label">How to say it</div>
+          <p id="quiz-answer"></p>
+        </div>
+        <div class="quiz-actions">
+          <button class="btn btn-ghost" id="quiz-still-learning" type="button">Still learning this</button>
+          <button class="btn btn-accent" id="quiz-got-it" type="button">Got it ✓</button>
+          <button class="btn btn-primary" id="quiz-next" type="button">Next question →</button>
+        </div>
+      </div>
+      <p class="quiz-empty" id="quiz-empty" hidden>No questions match the current filters. Add some questions or clear your filters first.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
